@@ -11,7 +11,8 @@ export type Dictionary<T> = Map<string,T>;
     };
 
     export type ChatChannel_Notification = {
-        SERVER: string
+        SERVER: string,
+        ERROR: string
     };
 
     export type Schema_ChatChannel = {

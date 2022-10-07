@@ -92,13 +92,18 @@ function ChatChannel.PostMessage(self: ChatChannel,sender: Player,message: strin
 end
 
 ChatChannel.Notification = {
-    SERVER = ChatStyling.ParseTextCodes("&f&l[&6Server&f]&r&7: ")
+    SERVER = ChatStyling.ParseTextCodes("&f&l[&6Server&f]&r&7: "),
+    ERROR = ChatStyling.ParseTextCodes("&f&l[&4Error&f]&r&7: ");
 };
 
-function ChatChannel.PostNotification(self: ChatChannel,prefix: string,message: string,players: {Player}?)
+function ChatChannel.PostNotification(self: ChatChannel,prefix: string,message: string,players: {Player} | Player?)
     if players then
-        for _,plr: Player in ipairs(players) do
-            PostNotification:FireClient(plr,self.Name,prefix,message);
+        if typeof(players) == "Instance" and players:IsA("Player") then
+            PostNotification:FireClient(players::Player,self.Name,prefix,message);
+        elseif typeof(players) == "table" then
+            for _,plr: Player in ipairs(players) do
+                PostNotification:FireClient(plr,self.Name,prefix,message);
+            end
         end
     else
         -- TODO: Decide if I want to fire to all players or only channel authorized
