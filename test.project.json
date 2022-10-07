@@ -1,0 +1,27 @@
+{
+    "name": "chatbox-extended",
+    "servePort": 34873,
+    "tree": {
+        "$className": "DataModel",
+
+        "ReplicatedStorage": {
+            "$className": "ReplicatedStorage",
+
+            "ChatboxExtended": {"$path": "lib"}
+        },
+        "ServerScriptService": {
+            "$className": "ServerScriptService",
+            
+            "ChatboxRunner": {"$path": "TestScripts/ChatboxRunner.server.lua"}
+        },
+        "StarterPlayer": {
+            "$className": "StarterPlayer",
+
+            "StarterPlayerScripts": {
+                "$className": "StarterPlayerScripts",
+
+                "ChatboxRunner": {"$path": "TestScripts/ChatboxRunner.client.lua"}
+            }
+        }
+    }
+}

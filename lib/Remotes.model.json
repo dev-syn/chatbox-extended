@@ -1,0 +1,13 @@
+{
+    "ClassName": "Folder",
+    "Children": [
+        {
+            "Name": "PostMessage",
+            "ClassName": "RemoteEvent"
+        },
+        {
+            "Name": "PostNotification",
+            "ClassName": "RemoteEvent"
+        }
+    ]
+}
