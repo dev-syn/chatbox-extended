@@ -1,4 +1,6 @@
-local MAX_MESSAGES: number = 30;
+local Config = require(script.Parent:FindFirstChild("ChatConfig"));
+
+local MAX_MESSAGES: number = Config.MAX_MESSAGES or 30;
 
 --- @module lib/ChatboxClient/Types
 local Types = require(script:FindFirstChild("Types"));
@@ -96,8 +98,23 @@ function ChatboxExtended.Init()
     ChatboxExtended.ChatField = ChatboxExtended.Background:FindFirstChild("ChatField") :: TextBox;
     ChatboxExtended.ChatField.FocusLost:Connect(function(enterPressed: boolean,inputObject: InputObject)
         if enterPressed then
+            if ChatboxExtended.ChatField.Text == "" or #ChatboxExtended.ChatField.Text > (Config.MAX_CHAR or 100) then
+                return;
+            end
             PostMessage:FireServer(ChatboxExtended.ActiveChannel or "General",ChatboxExtended.ChatField.Text);
             ChatboxExtended.ChatField.Text = "";
+        end
+    end);
+    game:GetService("UserInputService").InputBegan:Connect(function(input: InputObject,gamePro: boolean)
+        -- Only proccess input if it's from game and not ui
+        if gamePro then return; end
+        if input.KeyCode == Enum.KeyCode.Slash then
+            if ChatboxExtended.ChatField:IsFocused() then
+                ChatboxExtended.ChatField:ReleaseFocus(false);
+            else
+                game:GetService("RunService").Heartbeat:Wait();
+                ChatboxExtended.ChatField:CaptureFocus();
+            end
         end
     end);
     ChatboxExtended.UI.Enabled = true;

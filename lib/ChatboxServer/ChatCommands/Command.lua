@@ -9,8 +9,8 @@ Command.ClassName = "Command";
 function Command.new(name: string,executor: () -> () | (...any) -> ...any,aliases: {string}?) : Command
     local self = {} :: Types.Object_Command;
     self.Name = name:lower();
-    self.Aliases = aliases;
-    self.Executor = executor;
+    self._Aliases = aliases;
+    self._Executor = executor;
     return setmetatable(self,Command) :: Command;
 end
 

@@ -1,15 +1,16 @@
 --- @module lib/ChatboxServer/Types
 local Types = require(script.Parent:FindFirstChild("Types"));
 type ChatChannel = Types.ChatChannel;
+type Command = Types.Command;
 
 --- @module lib/ChatboxServer/ChatCommands/Command
-local Command = require(script:FindFirstChild("Command"));
+local Command: Types.Schema_Command = require(script:FindFirstChild("Command"));
 
 local ChatCommands = {} :: Types.ChatCommands;
 
 ChatCommands.Prefix = "/";
 
-ChatCommands.CommandContainer = {};
+ChatCommands.RegisteredCommands = {};
 
 --- @module lib/ChatboxServer/init
 local ChatboxExtended;
@@ -17,24 +18,26 @@ function ChatCommands.Init(chatboxExtended: Types.ChatboxExtended)
     ChatboxExtended = chatboxExtended;
 end
 
-function ChatCommands.IsCommand(name: string) : boolean
-    return ChatCommands.CommandContainer[name] and true or false;
+function ChatCommands.FindCommand(queryName: string) : Command?
+    for _,command: Command in ipairs(ChatCommands.RegisteredCommands) do
+        if command.Name == queryName or table.find(command._Aliases,queryName) then
+            return command::Command?;
+        end
+    end
+    return nil;
 end
 
-function ChatCommands.HandleCommand(name: string,...: any) : (boolean,...any)
-    local command: Types.Command = ChatCommands.CommandContainer[name];
-    if command and command.Executor then
-        return true,command.Executor(...);
+function ChatCommands.HandleCommand(cmd: Command,...: any) : (boolean,...any)
+    if cmd._Executor then
+        return true,cmd._Executor(...);
     end
     return false;
 end
 
-function ChatCommands.RegisterCommand(command: Types.Command)
-    if ChatCommands.CommandContainer[command.Name] then
-        warn("Command already exists");
-        return;
-    end
-    ChatCommands.CommandContainer[command.Name] = command;
+function ChatCommands.RegisterCommand(cmd: Command)
+    local registeredCommands: {Command} = ChatCommands.RegisteredCommands;
+    if table.find(registeredCommands,cmd) then warn("Command already exists"); return; end
+    table.insert(registeredCommands,cmd);
 end
 
 function ChatCommands.LoadDefaultCommands()

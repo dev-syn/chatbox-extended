@@ -1,3 +1,6 @@
+--- @module lib/ChatConfig
+local Config = require(script.Parent.Parent:FindFirstChild("ChatConfig"));
+
 local TextService: TextService = game:GetService("TextService");
 
 local Remotes: Folder = script.Parent.Parent:FindFirstChild("Remotes");
@@ -64,29 +67,42 @@ function ChatChannel.FireToAuthorized(self: ChatChannel,remote: RemoteEvent,...:
     end
 end
 
+local function getFilteredText(sender: Player,text: string) : string?
+    local filteredTextObject: TextFilterResult;
+    local success: boolean, err: string = pcall(function()
+        filteredTextObject = TextService:FilterStringAsync(text,sender.UserId,Enum.TextFilterContext.PublicChat);
+    end);
+    if success then
+        return filteredTextObject:GetNonChatStringForBroadcastAsync();
+    end
+    return nil;
+end
+
 function ChatChannel.PostMessage(self: ChatChannel,sender: Player,message: string)
+    if message == "" or #message > (Config.MAX_CHAR or 100) then
+        -- Message is empty or over max char limit
+        return;
+    end
     -- Strip message of any rich text
     message = ChatStyling.StripRichText(message);
-    -- Check if message is a command
+    
+    -- Check if the first char is command prefix
     if ChatCommands and message:sub(1,1) == ChatCommands.Prefix then
         local args = message:split(" ");
         if #args == 0 then
             warn("No args for command");
             return;
         end
-        if ChatCommands.IsCommand(args[1]:sub(2)) then
-            local success = ChatCommands.HandleCommand(args[1]:sub(2),table.unpack({sender,table.unpack(args,2)}));
+        -- Try finding command with the given name
+        local cmd: Types.Command? = ChatCommands.FindCommand(args[1]:sub(2)) :: Types.Command?;
+        if cmd then
+            local success: boolean = ChatCommands.HandleCommand(cmd,table.unpack({sender,table.unpack(args,2)}));
             return;
         end
     end
     -- TODO: Check if this sender has authorization to post a message
-    local filteredTextObject: TextFilterResult;
-    local success: boolean, err: string = pcall(function()
-        filteredTextObject = TextService:FilterStringAsync(message,sender.UserId,Enum.TextFilterContext.PublicChat);
-    end);
-    if success then
-        local filteredMessage: string = filteredTextObject:GetNonChatStringForBroadcastAsync();
-        -- Get the players set name colour
+    local filteredMessage: string = getFilteredText(sender,message);
+    if filteredMessage then
         self:FireToAuthorized(PostMessage,self.Name,sender,filteredMessage);
     end
 end
@@ -97,6 +113,8 @@ ChatChannel.Notification = {
 };
 
 function ChatChannel.PostNotification(self: ChatChannel,prefix: string,message: string,players: {Player} | Player?)
+    if typeof(prefix) ~= "string" or prefix == "" then return; end
+    if typeof(message) ~= "string" or message == "" then return; end
     if players then
         if typeof(players) == "Instance" and players:IsA("Player") then
             PostNotification:FireClient(players::Player,self.Name,prefix,message);

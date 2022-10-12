@@ -36,8 +36,8 @@ export type Dictionary<T> = Map<string,T>;
 
     export type Object_Command = {
         Name: string,
-        Aliases: {string}?,
-        Executor: (...any) -> ()
+        _Aliases: {string}?,
+        _Executor: (...any) -> ()
     };
 
     export type Schema_Command = {
@@ -50,12 +50,12 @@ export type Dictionary<T> = Map<string,T>;
 
     export type ChatCommands = {
         Prefix: string,
-        CommandContainer: Dictionary<Command>,
+        RegisteredCommands: {Command},
 
         Init: (chatboxExtended: ChatboxExtended) -> (),
-        IsCommand: (name: string) -> boolean,
-        HandleCommand: (name: string,...any) -> (boolean,...any),
-        RegisterCommand: (command: Command) -> (),
+        FindCommand: (queryName: string) -> Command?,
+        HandleCommand: (cmd: Command,...any) -> (boolean,...any),
+        RegisterCommand: (cmd: Command) -> (),
         LoadDefaultCommands: () -> ()
     };
 -- #endregion
