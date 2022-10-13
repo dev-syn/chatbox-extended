@@ -1,6 +1,15 @@
 export type Map<K,V> = {[K]: V};
 export type Dictionary<T> = Map<string,T>;
 
+-- #region CoreTypes
+export type ChatboxCore = {
+    GetConfig: () -> Dictionary<any>
+};
+
+-- #endregion
+
+-- #region ServerTypes
+
 -- #region ChatChannel
     export type Object_ChatChannel = {
         Name: string,
@@ -52,7 +61,7 @@ export type Dictionary<T> = Map<string,T>;
         Prefix: string,
         _RegisteredCommands: {Command},
 
-        Init: (chatboxExtended: ChatboxExtended) -> (),
+        Init: (chatboxExtended: ChatboxExtendedServer) -> (),
         FindCommand: (queryName: string) -> Command?,
         HandleCommand: (cmd: Command,...any) -> (boolean,...any),
         RegisterCommand: (cmd: Command) -> (),
@@ -60,7 +69,8 @@ export type Dictionary<T> = Map<string,T>;
     };
 -- #endregion
 
-export type ChatboxExtended = {
+export type ChatboxExtendedServer = {
+    Core: ChatboxCore,
     ChatChannel: Schema_ChatChannel,
     ChatCommands: ChatCommands,
     ChatChannels: {
@@ -70,5 +80,21 @@ export type ChatboxExtended = {
     CreateChannel: (...any) -> ChatChannel,
     GetChannel: (name: string) -> ChatChannel?
 };
+
+-- #endregion
+
+-- #region ClientTypes
+export type ChatboxExtendedClient = {
+    ChatStyling: any,
+    ActiveChannel: string?,
+    Messages: Dictionary<{TextLabel}>,
+    Init: () -> (),
+    UI: ScreenGui,
+    Background: Frame,
+    ChatField: TextBox,
+    ChatList: ScrollingFrame,
+    ChatListLayout: UIListLayout
+};
+-- #endregion
 
 return true;
