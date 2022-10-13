@@ -7,7 +7,7 @@ local Remotes: Folder = script.Parent.Parent:FindFirstChild("Remotes");
 local PostMessage: RemoteEvent = Remotes:FindFirstChild("PostMessage");
 local PostNotification: RemoteEvent = Remotes:FindFirstChild("PostNotification");
 
---- @module lib/ChatboxServer/Types
+--- @module lib/Types
 local Types = script.Parent:FindFirstChild("Types");
 export type ChatChannel = Types.ChatChannel;
 

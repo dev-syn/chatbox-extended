@@ -1,4 +1,5 @@
-local Types = require(script:FindFirstChild("Types"));
+---@module lib/Types
+local Types = require(script.Parent:FindFirstChild("Types"));
 type ChatChannel = Types.ChatChannel;
 
 local function outWarn(level: number?,...: string)
@@ -14,13 +15,18 @@ end
     This class is for the server chat which includes chat colours, chat commands and different chat channels.
 ]=]
 
-local ChatboxExtended = {} :: Types.ChatboxExtended;
+local ChatboxExtended = {} :: Types.ChatboxExtendedServer;
+--[=[
+    @prop Core ChatCore
+    @within ChatboxExtendedServer
+]=]
+ChatboxExtended.Core = require(script.Parent:FindFirstChild("ChatCore"));
 
-local ChatChannel = require(script:FindFirstChild("ChatChannel"));
+local ChatChannel = require(script:FindFirstChild("ChatChannel")) :: Types.Schema_ChatChannel;
 ChatboxExtended.ChatChannel = ChatChannel;
 
 --- @module lib/ChatboxServer/ChatCommands/init
-local ChatCommands: Types.ChatCommands = require(script:FindFirstChild("ChatCommands"));
+local ChatCommands: Types.ChatCommands = require(script:FindFirstChild("ChatCommands")) :: Types.ChatCommands;
 --[=[
     @prop ChatCommands ChatCommands
     @within ChatboxExtendedServer

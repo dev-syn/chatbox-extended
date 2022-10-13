@@ -1,5 +1,5 @@
---- @module lib/ChatboxServer/Types
-local Types = require(script.Parent.Parent:FindFirstChild("Types"));
+--- @module lib/Types
+local Types = require(script.Parent.Parent.Parent:FindFirstChild("Types"));
 type Command = Types.Command;
 
 local Command = {} :: Types.Schema_Command;

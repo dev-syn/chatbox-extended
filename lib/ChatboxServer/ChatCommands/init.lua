@@ -1,10 +1,10 @@
---- @module lib/ChatboxServer/Types
-local Types = require(script.Parent:FindFirstChild("Types"));
+--- @module lib/Types
+local Types = require(script.Parent.Parent:FindFirstChild("Types"));
 type ChatChannel = Types.ChatChannel;
 type Command = Types.Command;
 
 --- @module lib/ChatboxServer/ChatCommands/Command
-local Command: Types.Schema_Command = require(script:FindFirstChild("Command"));
+local Command = require(script:FindFirstChild("Command")) :: Types.Schema_Command;
 
 --[=[
     @class ChatCommands
@@ -33,7 +33,7 @@ local ChatboxExtended;
     @param chatboxExtended ChatboxExtendedServer -- The ChatboxExtended class
     This is an internal initial' which is called to set a reference for ChatboxExtended.
 ]=]
-function ChatCommands.Init(chatboxExtended: Types.ChatboxExtended)
+function ChatCommands.Init(chatboxExtended: Types.ChatboxExtendedServer)
     ChatboxExtended = chatboxExtended;
 end
 

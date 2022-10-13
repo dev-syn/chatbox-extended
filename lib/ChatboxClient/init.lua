@@ -2,14 +2,15 @@ local Config = require(script.Parent:FindFirstChild("ChatConfig"));
 
 local MAX_MESSAGES: number = Config.MAX_MESSAGES or 30;
 
---- @module lib/ChatboxClient/Types
-local Types = require(script:FindFirstChild("Types"));
+--- @module lib/Types
+local Types = require(script.Parent:FindFirstChild("Types"));
 
 --[=[
     @class ChatboxExtendedClient
     This class is for the client chat which includes chat colours, chat commands and different chat channels.
 ]=]
-local ChatboxExtended = {} :: Types.ChatboxExtended;
+local ChatboxExtended = {} :: Types.ChatboxExtendedClient;
+
 local ChatStyling = require(script.Parent:FindFirstChild("ChatStyling"));
 --[=[
     @prop ChatStyling ChatStyling
@@ -78,6 +79,7 @@ function ChatboxExtended.Init()
     ChatboxExtended.ChatList = ChatboxExtended.Background:FindFirstChild("ChatList");
     ChatboxExtended.ChatListLayout = ChatboxExtended.ChatList:FindFirstChildOfClass("UIListLayout");
 
+    -- Setup PostNotification RemoteEvent
     PostNotification.OnClientEvent:Connect(function(channelName: string,prefix: string,message: string)
         -- If no channel by this name then create one
         if not ChatboxExtended.Messages[channelName] then
@@ -98,6 +100,7 @@ function ChatboxExtended.Init()
         table.insert(ChatboxExtended.Messages[channelName],messageLabel);
     end);
 
+    -- Setup PostMessage RemoteEventkl,
     PostMessage.OnClientEvent:Connect(function(channelName: string,sender: Player,message: string)
         -- If no channel by this name then create one
         if not ChatboxExtended.Messages[channelName] then
@@ -129,10 +132,11 @@ function ChatboxExtended.Init()
             ChatboxExtended.ChatField.Text = "";
         end
     end);
+    -- Listen for the input key to capture chat focus
     game:GetService("UserInputService").InputBegan:Connect(function(input: InputObject,gamePro: boolean)
         -- Only proccess input if it's from game and not ui
         if gamePro then return; end
-        if input.KeyCode == Enum.KeyCode.Slash then
+        if input.KeyCode == Config.FOCUS_CHAT_KEY or Enum.KeyCode.Slash then
             if ChatboxExtended.ChatField:IsFocused() then
                 ChatboxExtended.ChatField:ReleaseFocus(false);
             else
