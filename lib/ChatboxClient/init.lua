@@ -5,12 +5,31 @@ local MAX_MESSAGES: number = Config.MAX_MESSAGES or 30;
 --- @module lib/ChatboxClient/Types
 local Types = require(script:FindFirstChild("Types"));
 
+--[=[
+    @class ChatboxExtendedClient
+    This class is for the client chat which includes chat colours, chat commands and different chat channels.
+]=]
 local ChatboxExtended = {} :: Types.ChatboxExtended;
 local ChatStyling = require(script.Parent:FindFirstChild("ChatStyling"));
+--[=[
+    @prop ChatStyling ChatStyling
+    @within ChatboxExtendedClient
+    This property is a reference to the ChatStyling class.
+]=]
 ChatboxExtended.ChatStyling = ChatStyling;
 
+--[=[
+    @prop ActiveChannel string
+    @within ChatboxExtendedClient
+    This property stores a string which is a name of a ChatChannel or nil if not active channel.
+]=]
 ChatboxExtended.ActiveChannel = nil;
 
+--[=[
+    @prop Messages Dictionary<{TextLabel}>
+    @within ChatboxExtendedClient
+    This property is a dictionary which stores messages linked to their respective channels.
+]=]
 ChatboxExtended.Messages = {};
 
 local Remotes: Folder = script.Parent:FindFirstChild("Remotes");
@@ -44,7 +63,12 @@ local function createMessageLabel(text: string)
 end
 
 local isInitialized: boolean = false;
+--[=[
+    @within ChatboxExtendedClient
+    Initializes the client side of ChatboxExtended hooking the RemoteEvents and setting up the chat ui.
+]=]
 function ChatboxExtended.Init()
+    if isInitialized then return; end
     isInitialized = true;
     ChatboxExtended.UI = script:FindFirstChild("ChatboxExtendedUI") :: ScreenGui;
     ChatboxExtended.UI.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui");

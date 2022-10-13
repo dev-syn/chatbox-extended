@@ -1,3 +1,7 @@
+--[=[
+   @class ChatStyling
+   This class was designed to simplify the colours used in text and allows you to use colour codes which then are converted into font tags for rich text.
+]=]
 local ChatStyling = {};
 ChatStyling.__index = ChatStyling;
 ChatStyling.ColourCodeMap = {
@@ -32,6 +36,11 @@ local function formatRichColour(colourRGB: string) : string
     return string.format("<font color=\"%s\">",colourRGB);
 end
 
+--[=[
+    @param parsedText string -- The text that will be parsed
+    @param activeFormats {string} -- This table stores the active format codes currently in use
+    This function is for opening the font tags for format codes.
+]=]
 function ChatStyling.OpenFormatCodes(parsedText: string,activeFormats: {string}) : string
     for i,formatCode: string in ipairs(activeFormats) do
         local formatT: {string} = ChatStyling.FormatCodeMap[formatCode];
@@ -42,6 +51,12 @@ function ChatStyling.OpenFormatCodes(parsedText: string,activeFormats: {string})
     return parsedText;
 end
 
+--[=[
+    @param parsedText string -- The text that will be parsed
+    @param activeFormats {string} -- This table stores the active format codes currently in use
+    @param clearFormat boolean? -- When this is true it will clear out all the currently active colour codes
+    This function is for closing the font tags for format codes.
+]=]
 function ChatStyling.CloseFormatCodes(parsedText: string,activeFormats: {string},clearFormat: boolean?) : string
     for i = #activeFormats,1,-1 do
         local formatT: {string} = ChatStyling.FormatCodeMap[activeFormats[i]];
@@ -53,6 +68,9 @@ function ChatStyling.CloseFormatCodes(parsedText: string,activeFormats: {string}
     return parsedText;
 end
 
+--[=[
+    This function takes in a text and when any colour codes are found they will be converted into font rich text format.
+]=]
 function ChatStyling.ParseTextCodes(text: string) : string
     local currentIndex: number = 0;
     local parsedText: string = "";
@@ -148,6 +166,9 @@ local disallowedRichText = {
 	"<!--%s*%w*%s*-->"
 };
 
+--[=[
+    This function strips all rich text away from text leaving just the plain text.
+]=]
 function ChatStyling.StripRichText(text: string)
     for _,disallowPattern in ipairs(disallowedRichText) do
         text = text:gsub(disallowPattern,"");

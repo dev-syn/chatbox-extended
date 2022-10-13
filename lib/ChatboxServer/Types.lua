@@ -20,13 +20,13 @@ export type Dictionary<T> = Map<string,T>;
         Notification: ChatChannel_Notification,
 
         new: (name: string,bAuthorized: boolean?) -> ChatChannel,
-        Init: (chatCommands: ChatCommands) -> (),
-        IsPlayerAuthorized: (self: ChatChannel,Players: Player) -> boolean,
+        _Init: (chatCommands: ChatCommands) -> (),
+        IsPlayerAuthorized: (self: ChatChannel,plr: Player) -> boolean,
         SetAuthEnabled: (self: ChatChannel,bAuthorized: boolean) -> (),
-        SetPlayerAuth: (self: ChatChannel,player: Player,toAuthorize: boolean) -> (),
-        FireToAuthorized: (self: ChatChannel,remote: RemoteEvent,...any) -> (),
-        PostMessage: (self: ChatChannel,sender: Player,message: string) -> (),
-        PostNotification: (self: ChatChannel,notification: any,message: string,players: {Player} | Player?) -> ()
+        SetPlayerAuth: (self: ChatChannel,plr: Player,toAuthorize: boolean) -> (),
+        _FireToAuthorized: (self: ChatChannel,remote: RemoteEvent,...any) -> (),
+        PostMessage: (self: ChatChannel,sender: Player,msg: string) -> (),
+        PostNotification: (self: ChatChannel,notification: any,msg: string,players: {Player} | Player?) -> ()
     };
 
     export type ChatChannel = Schema_ChatChannel & Object_ChatChannel;
@@ -50,7 +50,7 @@ export type Dictionary<T> = Map<string,T>;
 
     export type ChatCommands = {
         Prefix: string,
-        RegisteredCommands: {Command},
+        _RegisteredCommands: {Command},
 
         Init: (chatboxExtended: ChatboxExtended) -> (),
         FindCommand: (queryName: string) -> Command?,

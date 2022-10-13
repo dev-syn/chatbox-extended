@@ -1,0 +1,7 @@
+changelog = true
+[[classOrder]]
+section = "Server API"
+classes = ["ChatboxExtendedServer","ChatChannel","ChatCommands"]
+[[classOrder]]
+section = "Client API"
+classes = ["ChatboxExtendedClient"]
