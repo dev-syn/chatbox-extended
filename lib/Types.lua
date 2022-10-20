@@ -6,20 +6,6 @@ export type Dictionary<T> = Map<string,T>;
 
 
 -- #region CoreTypes
-
-    -- #region ChatStyling
-        export type ChatStyling = {
-            __index: any,
-            ColourCodeMap: Dictionary<string>,
-            FormatCodeMap: Dictionary<{string}>,
-
-            OpenFormatCodes: (parsedText: string,activeFormats: {string}) -> string,
-            CloseFormatCodes: (parsedText: string,activeFormats: {string},clearFormat: boolean?) -> string,
-            ParseTextCodes: (text: string) -> string,
-            StripRichText: (text: string) -> ()
-        };
-    -- #endregion
-
     -- #region ChatConfig
         export type ChatConfig = {
             MAX_MESSAGES_SERVER: number?,
