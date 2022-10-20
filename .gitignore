@@ -1,10 +1,4 @@
-# Project place file
+Packages/_Index
 /ChatBoxExtended.rbxlx
-
-# Roblox Studio lock files
-/*.rbxlx.lock
-/*.rbxl.lock
-
+/*.lock
 /.VsCodeCounter
-
-/Packages/_Index
