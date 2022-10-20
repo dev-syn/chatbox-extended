@@ -352,20 +352,20 @@
         </Properties>
         <Item class="TextButton" referent="7">
           <Properties>
-            <string name="Name">PrevChannel</string>
+            <string name="Name">ChannelNameB</string>
             <bool name="Active">true</bool>
             <Vector2 name="AnchorPoint">
-              <X>0</X>
-              <Y>0</Y>
+              <X>0.5</X>
+              <Y>0.5</Y>
             </Vector2>
             <BinaryString name="AttributesSerialize"></BinaryString>
             <bool name="AutoButtonColor">true</bool>
             <bool name="AutoLocalize">true</bool>
             <token name="AutomaticSize">0</token>
             <Color3 name="BackgroundColor3">
-              <R>0.23921569</R>
-              <G>0.23921569</G>
-              <B>0.23921569</B>
+              <R>0.47450984</R>
+              <G>0.47450984</G>
+              <B>0.47450984</B>
             </Color3>
             <float name="BackgroundTransparency">0</float>
             <Color3 name="BorderColor3">
@@ -377,7 +377,7 @@
             <int name="BorderSizePixel">0</int>
             <bool name="ClipsDescendants">false</bool>
             <bool name="Draggable">false</bool>
-            <token name="Font">0</token>
+            <token name="Font">8</token>
             <int name="LayoutOrder">0</int>
             <float name="LineHeight">1</float>
             <int name="MaxVisibleGraphemes">-1</int>
@@ -387,9 +387,9 @@
             <Ref name="NextSelectionRight">null</Ref>
             <Ref name="NextSelectionUp">null</Ref>
             <UDim2 name="Position">
-              <XS>0</XS>
+              <XS>0.5</XS>
               <XO>0</XO>
-              <YS>0</YS>
+              <YS>0.5</YS>
               <YO>0</YO>
             </UDim2>
             <bool name="RichText">false</bool>
@@ -405,7 +405,7 @@
             <Ref name="SelectionImageObject">null</Ref>
             <int name="SelectionOrder">0</int>
             <UDim2 name="Size">
-              <XS>0.05</XS>
+              <XS>0.9</XS>
               <XO>0</XO>
               <YS>1</YS>
               <YO>0</YO>
@@ -414,32 +414,42 @@
             <int64 name="SourceAssetId">-1</int64>
             <token name="Style">0</token>
             <BinaryString name="Tags"></BinaryString>
-            <string name="Text">&lt;</string>
+            <string name="Text">Channel 1: General</string>
             <Color3 name="TextColor3">
               <R>1</R>
               <G>1</G>
               <B>1</B>
             </Color3>
-            <bool name="TextScaled">false</bool>
+            <bool name="TextScaled">true</bool>
             <float name="TextSize">14</float>
             <Color3 name="TextStrokeColor3">
               <R>0</R>
               <G>0</G>
               <B>0</B>
             </Color3>
-            <float name="TextStrokeTransparency">1</float>
+            <float name="TextStrokeTransparency">0.7</float>
             <float name="TextTransparency">0</float>
             <token name="TextTruncate">0</token>
-            <bool name="TextWrapped">false</bool>
+            <bool name="TextWrapped">true</bool>
             <token name="TextXAlignment">2</token>
             <token name="TextYAlignment">1</token>
             <bool name="Visible">true</bool>
-            <int name="ZIndex">4</int>
+            <int name="ZIndex">3</int>
           </Properties>
+          <Item class="UITextSizeConstraint" referent="8">
+            <Properties>
+              <string name="Name">UITextSizeConstraint</string>
+              <BinaryString name="AttributesSerialize"></BinaryString>
+              <int name="MaxTextSize">22</int>
+              <int name="MinTextSize">8</int>
+              <int64 name="SourceAssetId">-1</int64>
+              <BinaryString name="Tags"></BinaryString>
+            </Properties>
+          </Item>
         </Item>
-        <Item class="TextButton" referent="8">
+        <Item class="TextButton" referent="9">
           <Properties>
-            <string name="Name">NextChannel</string>
+            <string name="Name">NextChannelB</string>
             <bool name="Active">true</bool>
             <Vector2 name="AnchorPoint">
               <X>1</X>
@@ -524,22 +534,22 @@
             <int name="ZIndex">4</int>
           </Properties>
         </Item>
-        <Item class="TextButton" referent="9">
+        <Item class="TextButton" referent="10">
           <Properties>
-            <string name="Name">ChannelButton</string>
+            <string name="Name">PrevChannelB</string>
             <bool name="Active">true</bool>
             <Vector2 name="AnchorPoint">
-              <X>0.5</X>
-              <Y>0.5</Y>
+              <X>0</X>
+              <Y>0</Y>
             </Vector2>
             <BinaryString name="AttributesSerialize"></BinaryString>
             <bool name="AutoButtonColor">true</bool>
             <bool name="AutoLocalize">true</bool>
             <token name="AutomaticSize">0</token>
             <Color3 name="BackgroundColor3">
-              <R>0.47450984</R>
-              <G>0.47450984</G>
-              <B>0.47450984</B>
+              <R>0.23921569</R>
+              <G>0.23921569</G>
+              <B>0.23921569</B>
             </Color3>
             <float name="BackgroundTransparency">0</float>
             <Color3 name="BorderColor3">
@@ -551,7 +561,7 @@
             <int name="BorderSizePixel">0</int>
             <bool name="ClipsDescendants">false</bool>
             <bool name="Draggable">false</bool>
-            <token name="Font">8</token>
+            <token name="Font">0</token>
             <int name="LayoutOrder">0</int>
             <float name="LineHeight">1</float>
             <int name="MaxVisibleGraphemes">-1</int>
@@ -561,9 +571,9 @@
             <Ref name="NextSelectionRight">null</Ref>
             <Ref name="NextSelectionUp">null</Ref>
             <UDim2 name="Position">
-              <XS>0.5</XS>
+              <XS>0</XS>
               <XO>0</XO>
-              <YS>0.5</YS>
+              <YS>0</YS>
               <YO>0</YO>
             </UDim2>
             <bool name="RichText">false</bool>
@@ -579,7 +589,7 @@
             <Ref name="SelectionImageObject">null</Ref>
             <int name="SelectionOrder">0</int>
             <UDim2 name="Size">
-              <XS>0.9</XS>
+              <XS>0.05</XS>
               <XO>0</XO>
               <YS>1</YS>
               <YO>0</YO>
@@ -588,38 +598,28 @@
             <int64 name="SourceAssetId">-1</int64>
             <token name="Style">0</token>
             <BinaryString name="Tags"></BinaryString>
-            <string name="Text">Channel 1: General</string>
+            <string name="Text">&lt;</string>
             <Color3 name="TextColor3">
               <R>1</R>
               <G>1</G>
               <B>1</B>
             </Color3>
-            <bool name="TextScaled">true</bool>
+            <bool name="TextScaled">false</bool>
             <float name="TextSize">14</float>
             <Color3 name="TextStrokeColor3">
               <R>0</R>
               <G>0</G>
               <B>0</B>
             </Color3>
-            <float name="TextStrokeTransparency">0.7</float>
+            <float name="TextStrokeTransparency">1</float>
             <float name="TextTransparency">0</float>
             <token name="TextTruncate">0</token>
-            <bool name="TextWrapped">true</bool>
+            <bool name="TextWrapped">false</bool>
             <token name="TextXAlignment">2</token>
             <token name="TextYAlignment">1</token>
             <bool name="Visible">true</bool>
-            <int name="ZIndex">3</int>
+            <int name="ZIndex">4</int>
           </Properties>
-          <Item class="UITextSizeConstraint" referent="10">
-            <Properties>
-              <string name="Name">UITextSizeConstraint</string>
-              <BinaryString name="AttributesSerialize"></BinaryString>
-              <int name="MaxTextSize">22</int>
-              <int name="MinTextSize">8</int>
-              <int64 name="SourceAssetId">-1</int64>
-              <BinaryString name="Tags"></BinaryString>
-            </Properties>
-          </Item>
         </Item>
       </Item>
     </Item>
