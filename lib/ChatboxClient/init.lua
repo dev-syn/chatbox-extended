@@ -1,151 +1,330 @@
-local Config = require(script.Parent:FindFirstChild("ChatConfig"));
-
-local MAX_MESSAGES: number = Config.MAX_MESSAGES or 30;
-
 --- @module lib/Types
 local Types = require(script.Parent:FindFirstChild("Types"));
+type ChatChannel = Types.ChatChannelC;
+type RealmCommand = Types.RealmCommand;
 
 --[=[
-    @class ChatboxExtendedClient
+    @class ChatboxExtendedC
+    @client
+
     This class is for the client chat which includes chat colours, chat commands and different chat channels.
 ]=]
-local ChatboxExtended = {} :: Types.ChatboxExtendedClient;
+local ChatboxExtended = {} :: Types.ChatboxExtendedC;
 
-local ChatStyling = require(script.Parent:FindFirstChild("ChatStyling"));
+local Core = require(script.Parent:FindFirstChild("ChatCore"));
 --[=[
-    @prop ChatStyling ChatStyling
-    @within ChatboxExtendedClient
-    This property is a reference to the ChatStyling class.
+    @prop Core ChatCore
+    @within ChatboxExtendedC
+    @tag reference
+
+    This property is a reference to the [ChatCore] class.
 ]=]
-ChatboxExtended.ChatStyling = ChatStyling;
+ChatboxExtended.Core = Core;
+
+local ChatUI: Types.ChatUI = require(script:FindFirstChild("ChatUI"));
+--[=[
+    @prop ChatUI ChatUI
+    @within ChatboxExtendedC
+    @tag reference
+
+    This property is a reference to the [ChatUI] class.
+]=]
+ChatboxExtended.ChatUI = ChatUI;
 
 --[=[
-    @prop ActiveChannel string
-    @within ChatboxExtendedClient
-    This property stores a string which is a name of a ChatChannel or nil if not active channel.
+    @prop _ChatChannels {ChatChannelC}
+    @within ChatboxExtendedC
+    @private
+
+    This is an internal property that stores the current existing [ChatChannels](/api/ChatChannelC)
+]=]
+ChatboxExtended._ChatChannels = {};
+
+-- Remote declerations
+local Remotes = script.Parent:FindFirstChild("Remotes") :: Folder;
+
+local ChatChannelReplication = Remotes:FindFirstChild("ChatChannelReplication") :: RemoteEvent;
+local RequestChannelsRF = Remotes:FindFirstChild("RequestChannels") :: RemoteFunction
+local PostMessage = Remotes:FindFirstChild("PostMessage") :: RemoteEvent;
+local PostNotification = Remotes:FindFirstChild("PostNotification") :: RemoteEvent;
+
+--[=[
+    @prop ActiveChannel ChatChannelC?
+    @within ChatboxExtendedC
+
+    This property stores the active [ChatChannel](/api/ChatChannelC) or nil if there isn't one.
 ]=]
 ChatboxExtended.ActiveChannel = nil;
 
---[=[
-    @prop Messages Dictionary<{TextLabel}>
-    @within ChatboxExtendedClient
-    This property is a dictionary which stores messages linked to their respective channels.
-]=]
-ChatboxExtended.Messages = {};
+-- Class local references
+local ChatChannel = require(script:FindFirstChild("ChatChannel")) :: Types.ChatChannelC;
+local ChatStyling: Types.ChatStyling = ChatboxExtended.Core.ChatStyling;
+local ChatCommands: Types.ChatCommands = ChatboxExtended.Core.ChatCommands;
 
-local Remotes: Folder = script.Parent:FindFirstChild("Remotes");
-local PostMessage: RemoteEvent = Remotes:FindFirstChild("PostMessage") :: RemoteEvent;
-local PostNotification: RemoteEvent = Remotes:FindFirstChild("PostNotification") :: RemoteEvent;
+local Command: Types.Schema_Command,RealmCommand: Types.Schema_RealmCommand = ChatCommands.Command,ChatCommands.RealmCommand;
 
-local function createMessageLabel(text: string)
-    local message = Instance.new("TextLabel");
-    message.Name = "message";
-    message.AutomaticSize = Enum.AutomaticSize.Y;
-    message.Size = UDim2.new(1, 0, 0.1, 0);
-    message.BackgroundTransparency = 1;
-    message.Font = Enum.Font.SourceSans;
-    message.FontSize = Enum.FontSize.Size14;
-    message.TextSize = 14;
-    message.TextColor3 = Color3.fromRGB(255, 255, 255);
-    message.RichText = true;
-    message.Text = text;
-    message.TextScaled = true;
-    message.TextWrapped = true;
-    message.TextWrap = true;
-    message.TextXAlignment = Enum.TextXAlignment.Left;
+local Config: Types.ChatConfig = ChatboxExtended.Core.GetConfig();
 
-    local UITextSizeConstraint = Instance.new("UITextSizeConstraint");
-    UITextSizeConstraint.MaxTextSize = 16;
-    UITextSizeConstraint.MinTextSize = 6;
-    UITextSizeConstraint.Parent = message;
-
-    message.Visible = true;
-    return message;
+local function createChannel(channelName: string)
+    -- Check if this channel already exists
+    if Core.FindChatChannel(ChatboxExtended,channelName) then return; end
+    local newChannel: ChatChannel = ChatChannel.new(channelName);
+    table.insert(ChatboxExtended._ChatChannels,newChannel);
+    -- If no active channel set it to the first created
+    if not ChatboxExtended.ActiveChannel then 
+        ChatboxExtended.ActiveChannel = newChannel::ChatChannel?;
+        ChatUI.ChannelNameB.Text = string.format("Channel %d: %s",1,channelName);
+    end
 end
 
+local function switchToChannel(channelIndex: number)
+    local switchChannel: ChatChannel = ChatboxExtended._ChatChannels[channelIndex];
+    if switchChannel then
+        -- Clear out messages from active channel
+        local activeChannel: ChatChannel? = ChatboxExtended.ActiveChannel;
+        if activeChannel then
+            if activeChannel == switchChannel then return; end
+            ChatUI.ChatListLayout.Parent = nil::any;
+            for _,child: Instance in ipairs(ChatUI.ChatList:GetChildren()) do
+                child.Parent = nil::any;
+            end
+        end
+        ChatUI.ChannelNameB.Text = string.format("Channel %d: %s",channelIndex,switchChannel.Name);
+        -- Transition to switch channel messages
+        for _,textL: TextLabel in ipairs(switchChannel.Messages) do
+            textL.Parent = ChatUI.ChatList;
+        end
+        ChatUI.ChatListLayout.Parent = ChatUI.ChatList;
+        ChatboxExtended.ActiveChannel = switchChannel :: ChatChannel?;
+    end
+end
+
+--[=[
+    @within ChatUI
+    @private
+
+    This function is a internal handler for when the [ChatUI.NextChannelB] MouseButton1Click event gets connected.
+]=]
+function ChatboxExtended._NextChannelHandler()
+    local nextChannelIndex: number = nil;
+        if ChatboxExtended.ActiveChannel then
+            -- Get the current active channels index
+            local currentIndex: number = table.find(ChatboxExtended._ChatChannels,ChatboxExtended.ActiveChannel);
+            if currentIndex then nextChannelIndex = currentIndex + 1 end
+        else
+            nextChannelIndex = 1;
+        end
+        if not nextChannelIndex or nextChannelIndex > #ChatboxExtended._ChatChannels then
+            nextChannelIndex = 1;
+        end
+        switchToChannel(nextChannelIndex);
+end
+
+--[=[
+    @within ChatUI
+    @private
+
+    This function is a internal handler for when the [ChatUI.PrevChannelB] MouseButton1Click event gets connected.
+]=]
+function ChatboxExtended._PrevChannelHandler()
+    local prevChannelIndex: number = nil;
+        if ChatboxExtended.ActiveChannel then
+            -- Get the current active channels index
+            local currentIndex: number = table.find(ChatboxExtended._ChatChannels,ChatboxExtended.ActiveChannel);
+            if not currentIndex or currentIndex == 1 then
+                prevChannelIndex = #ChatboxExtended._ChatChannels;
+            else
+                prevChannelIndex = currentIndex - 1;
+            end
+        else
+            prevChannelIndex = 1;
+        end
+        switchToChannel(prevChannelIndex);
+end
+
+local cachedMessages: {string};
+local cachedIndex: number = 0;
+
+--[=[
+    @within ChatUI
+    @private
+
+    This function is a internal handler for when the [ChatUI.ChatField] FocusLost event gets connected.
+]=]
+function ChatboxExtended._FocusLostHandler(enterPressed: boolean)
+    if enterPressed then
+        local text: string = ChatUI.ChatField.Text;
+        if text == "" or #text > (Config.MAX_CHAR or 100) then
+            return;
+        end
+        -- Cache this message
+        local max_cache: number = Config.MAX_CACHED_MESSAGES or 7;
+        if #cachedMessages == max_cache then table.remove(cachedMessages,1); end
+        table.insert(cachedMessages,text);
+        cachedIndex = 0;
+        -- Check if the first char is command prefix
+        if text:sub(1,1) == ChatCommands.Prefix then
+            local args = text:split(" ");
+            -- Verify a command name and not just the prefix
+            if #args[1] > 1 then
+                -- Try finding command with the given name
+                local cmd: Types.Command? = ChatCommands.FindCommand(args[1]:sub(2)) :: Types.Command?;
+                if cmd then
+                    local success: boolean = ChatCommands.HandleCommand(cmd,table.unpack(args,2));
+                    return;
+                end
+            end
+        end
+        if ChatboxExtended.ActiveChannel then
+            PostMessage:FireServer(ChatboxExtended.ActiveChannel.Name,text);
+        end
+        ChatboxExtended.ChatUI.ChatField.Text = "";
+    end
+end
+
+local InputService: UserInputService = game:GetService("UserInputService");
+local ReplicationAction: Types.ReplicationAction = ChatboxExtended.Core.ReplicationAction;
+local lastPlayerWhoMessaged: Player? = nil;
 local isInitialized: boolean = false;
 --[=[
-    @within ChatboxExtendedClient
-    Initializes the client side of ChatboxExtended hooking the RemoteEvents and setting up the chat ui.
+    @within ChatboxExtendedC
+
+    Initializes the client side of [ChatboxExtended](/api/ChatboxExtendedC) hooking the RemoteEvents and setting up the chat ui.
+
+    :::danger
+
+    Failure to calling this function will break [ChatboxExtended](/api/ChatboxExtendedC)
+
+    :::
 ]=]
 function ChatboxExtended.Init()
     if isInitialized then return; end
     isInitialized = true;
-    ChatboxExtended.UI = script:FindFirstChild("ChatboxExtendedUI") :: ScreenGui;
-    ChatboxExtended.UI.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui");
+    -- Get config for potential changes
+    Config = Core.GetConfig();
 
-    ChatboxExtended.Background = ChatboxExtended.UI:FindFirstChild("ChatBack");
+    -- Initialize ChatChannel for ChatboxExtended reference
+    ChatChannel.Init(ChatboxExtended);
+    cachedMessages = {};
 
-    ChatboxExtended.ChatList = ChatboxExtended.Background:FindFirstChild("ChatList");
-    ChatboxExtended.ChatListLayout = ChatboxExtended.ChatList:FindFirstChildOfClass("UIListLayout");
-
-    -- Setup PostNotification RemoteEvent
-    PostNotification.OnClientEvent:Connect(function(channelName: string,prefix: string,message: string)
-        -- If no channel by this name then create one
-        if not ChatboxExtended.Messages[channelName] then
-            ChatboxExtended.Messages[channelName] = {};
-        end
-        -- Destroy any messages above the max
-        if #ChatboxExtended.Messages[channelName] > (MAX_MESSAGES - 1) then
-            local messageLabel: TextLabel = ChatboxExtended.Messages[channelName][1];
-            if messageLabel then
-                messageLabel:Destroy();
+    ChatChannelReplication.OnClientEvent:Connect(function(replicationAction: number,channelName: string)
+        if replicationAction == ReplicationAction.CREATE then
+            createChannel(channelName);
+        elseif replicationAction == ReplicationAction.DESTROY and ChatboxExtended._ChatChannels[channelName] then
+            local foundChannel: ChatChannel,index: number = Core.FindChatChannel(ChatboxExtended,channelName);
+            if foundChannel then
+                -- Reassign the ActiveChannel if it's the channel being destroyed
+                if ChatboxExtended.ActiveChannel == foundChannel then
+                    local channelLength: number = #ChatboxExtended._ChatChannels;
+                    -- Reassign ActiveChannel if it's not the last channel
+                    if channelLength > 1 then
+                        if index < channelLength then
+                            ChatboxExtended.ActiveChannel = ChatboxExtended._ChatChannels[index + 1] :: ChatChannel?
+                        else
+                            ChatboxExtended.ActiveChannel = ChatboxExtended._ChatChannels[1] :: ChatChannel?
+                        end
+                    else
+                        ChatboxExtended.ActiveChannel = nil;
+                    end
+                end
+                table.remove(ChatboxExtended._ChatChannels,index);
             end
-            table.remove(ChatboxExtended.Messages[channelName],1);
         end
-        prefix = ChatStyling.ParseTextCodes(prefix);
-        message = ChatStyling.ParseTextCodes("&7"..message);
-        local messageLabel: TextLabel = createMessageLabel(prefix..message);
-        messageLabel.Parent = ChatboxExtended.ChatList;
-        table.insert(ChatboxExtended.Messages[channelName],messageLabel);
     end);
 
-    -- Setup PostMessage RemoteEventkl,
+    PostNotification.OnClientEvent:Connect(function(channelName: string?,prefix: string,message: string)
+        if channelName then
+            local channel: ChatChannel = Core.FindChatChannel(ChatboxExtended,channelName);
+            if channel then
+                channel:PostNotification(prefix,message);
+            end
+        else
+            if ChatboxExtended.ActiveChannel then
+                (ChatboxExtended.ActiveChannel::ChatChannel):PostNotification(prefix,message);
+            end
+        end
+    end);
+
     PostMessage.OnClientEvent:Connect(function(channelName: string,sender: Player,message: string)
-        -- If no channel by this name then create one
-        if not ChatboxExtended.Messages[channelName] then
-            ChatboxExtended.Messages[channelName] = {};
+        local channel: ChatChannel = Core.FindChatChannel(ChatboxExtended,channelName);
+        if channel then
+            channel:PostMessage(sender,message);
         end
-        -- Destroy any messages above the max
-        if #ChatboxExtended.Messages[channelName] > (MAX_MESSAGES - 1) then
-            local messageLabel: TextLabel = ChatboxExtended.Messages[channelName][1];
-            if messageLabel then
-                messageLabel:Destroy();
-            end
-            table.remove(ChatboxExtended.Messages[channelName],1);
-        end
-        local goldenPrefix: string = ChatStyling.ParseTextCodes("&6["..sender.Name.."]: ");
-        -- Create message label
-        local parsedText: string = ChatStyling.ParseTextCodes("&7"..message);
-        local messageLabel: TextLabel = createMessageLabel(goldenPrefix..parsedText);
-        messageLabel.Parent = ChatboxExtended.ChatList;
-        table.insert(ChatboxExtended.Messages[channelName],messageLabel);
     end);
 
-    ChatboxExtended.ChatField = ChatboxExtended.Background:FindFirstChild("ChatField") :: TextBox;
-    ChatboxExtended.ChatField.FocusLost:Connect(function(enterPressed: boolean,inputObject: InputObject)
-        if enterPressed then
-            if ChatboxExtended.ChatField.Text == "" or #ChatboxExtended.ChatField.Text > (Config.MAX_CHAR or 100) then
-                return;
-            end
-            PostMessage:FireServer(ChatboxExtended.ActiveChannel or "General",ChatboxExtended.ChatField.Text);
-            ChatboxExtended.ChatField.Text = "";
-        end
-    end);
+    -- Initialize ChatUI
+    local DefaultUI: ScreenGui = script:FindFirstChild("ChatboxExtendedUI") :: ScreenGui;
+    if DefaultUI then ChatUI._Init(ChatboxExtended,DefaultUI); end
+
     -- Listen for the input key to capture chat focus
-    game:GetService("UserInputService").InputBegan:Connect(function(input: InputObject,gamePro: boolean)
+    InputService.InputBegan:Connect(function(input: InputObject,gamePro: boolean)
         -- Only proccess input if it's from game and not ui
-        if gamePro then return; end
-        if input.KeyCode == Config.FOCUS_CHAT_KEY or Enum.KeyCode.Slash then
-            if ChatboxExtended.ChatField:IsFocused() then
-                ChatboxExtended.ChatField:ReleaseFocus(false);
-            else
+        if not (InputService:IsKeyDown(Enum.KeyCode.LeftShift) or InputService:IsKeyDown(Enum.KeyCode.RightShift)) and input.KeyCode == (Config.FOCUS_CHAT_KEY or Enum.KeyCode.Slash) then
+            if not ChatUI.ChatField:IsFocused() then
                 game:GetService("RunService").Heartbeat:Wait();
-                ChatboxExtended.ChatField:CaptureFocus();
+                ChatUI.ChatField:CaptureFocus();
+            end
+        elseif input.KeyCode == Enum.KeyCode.Up and ChatUI.ChatField:IsFocused() then
+            if cachedIndex < #cachedMessages then
+                cachedIndex += 1;
+                if cachedMessages[cachedIndex] then
+                    ChatUI.ChatField.Text = cachedMessages[cachedIndex];
+                    ChatUI.ChatField.CursorPosition = #ChatUI.ChatField.Text + 1;
+                end
+            end
+        elseif input.KeyCode == Enum.KeyCode.Down and ChatUI.ChatField:IsFocused() then
+            if cachedIndex > 1 then
+                cachedIndex -= 1;
+                if cachedMessages[cachedIndex] then
+                    ChatUI.ChatField.Text = cachedMessages[cachedIndex];
+                    ChatUI.ChatField.CursorPosition = #ChatUI.ChatField.Text + 1;
+                end
             end
         end
     end);
-    ChatboxExtended.UI.Enabled = true;
+
+    ChatUI.UI.Enabled = true;
+
+    -- Request channels from the server and attempt to create them if they don't exist
+    local channelNames: {string} = RequestChannelsRF:InvokeServer();
+    for _,channelName: string in ipairs(channelNames) do
+        createChannel(channelName);
+    end
+
+    ChatCommands.Init(ChatboxExtended);
+
+    local msgCmd: RealmCommand;
+    msgCmd = RealmCommand.new("msg",function(sender: Player,targetName: string,msg: string)
+        local target: Player? = game.Players:FindFirstChild(targetName);
+        if target then
+            lastPlayerWhoMessaged = target;
+            -- Request to send a private message to target
+            msgCmd.RemoteEvent:FireServer(target,msg);
+        end
+    end);
+    msgCmd:SetClientHandler(function(senderName: string,msg: string)
+        if ChatboxExtended.ActiveChannel then
+            senderName = ChatStyling.ParseTextCodes(senderName);
+            msg = ChatStyling.ParseTextCodes(msg);
+            (ChatboxExtended.ActiveChannel::ChatChannel):PostMessage();
+        end
+    end);
+    ChatCommands.RegisterCommand(msgCmd);
+end
+
+--[=[
+    @within ChatboxExtendedC
+    @yields
+
+    This function yields until a [ChatChannel] exists or it will timeout after the specified seconds.
+]=]
+function ChatboxExtended.YieldTillChannel(name: string,timeOut: number?) : ChatChannel
+    local startTime: number = DateTime.now().UnixTimestamp;
+    local queryChannel: ChatChannel = nil;
+    repeat
+        queryChannel = Core.FindChatChannel(ChatboxExtended,name);
+    until Core.FindChatChannel(ChatboxExtended,name) or timeOut and (DateTime.now().UnixTimestamp - startTime) >= timeOut;
+    return queryChannel;
 end
 
 return ChatboxExtended;
