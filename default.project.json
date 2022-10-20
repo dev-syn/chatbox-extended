@@ -1,4 +1,7 @@
 {
   "name": "chatbox-extended",
-  "tree": {"$path": "lib"}
+  "tree": {
+    "$path": "lib",
+    "Dependencies": {"$path": "Packages"}
+  }
 }

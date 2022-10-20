@@ -7,7 +7,11 @@
         "ReplicatedStorage": {
             "$className": "ReplicatedStorage",
 
-            "ChatboxExtended": {"$path": "lib"}
+            "ChatboxExtended": {
+                "$path": "lib",
+
+                "Dependencies": {"$path": "Packages"}
+            }
         },
         "ServerScriptService": {
             "$className": "ServerScriptService",
