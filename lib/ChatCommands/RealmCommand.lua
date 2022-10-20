@@ -14,6 +14,7 @@ local RealmCommandEvents: Folder = script.Parent.Parent:FindFirstChild("Remotes"
     This class inherits from the [Command] class and it implements server & client communication for cross-realm commands.
 ]=]
 local RealmCommand = {} :: Types.Schema_RealmCommand;
+RealmCommand.__index = RealmCommand;
 RealmCommand.ClassName = "RealmCommand";
 
 setmetatable(RealmCommand::table,Command::table);
