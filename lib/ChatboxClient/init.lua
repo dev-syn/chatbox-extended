@@ -58,7 +58,8 @@ ChatboxExtended.ActiveChannel = nil;
 
 -- Class local references
 local ChatChannel = require(script:FindFirstChild("ChatChannel")) :: Types.ChatChannelC;
-local ChatStyling: Types.ChatStyling = ChatboxExtended.Core.ChatStyling;
+---@module Packages/TextStyling
+local TextStyling: Types.TextStyling = ChatboxExtended.Core.TextStyling;
 local ChatCommands: Types.ChatCommands = ChatboxExtended.Core.ChatCommands;
 
 local Command: Types.Schema_Command,RealmCommand: Types.Schema_RealmCommand = ChatCommands.Command,ChatCommands.RealmCommand;
@@ -304,8 +305,8 @@ function ChatboxExtended.Init()
     end);
     msgCmd:SetClientHandler(function(senderName: string,msg: string)
         if ChatboxExtended.ActiveChannel then
-            senderName = ChatStyling.ParseTextCodes(senderName);
-            msg = ChatStyling.ParseTextCodes(msg);
+            senderName = TextStyling.ParseTextCodes(senderName);
+            msg = TextStyling.ParseTextCodes(msg);
             (ChatboxExtended.ActiveChannel::ChatChannel):PostMessage();
         end
     end);

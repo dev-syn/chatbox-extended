@@ -82,7 +82,8 @@ end
 
 local ChatboxExtended: Types.ChatboxExtended = nil;
 local Config: Types.ChatConfig = nil;
-local ChatStyling: Types.ChatStyling = nil;
+---@module Packages/TextStyling
+local TextStyling: Types.TextStyling = nil;
 local ChatCommands: Types.ChatCommands = nil;
 
 --[=[
@@ -94,7 +95,7 @@ function ChatChannel._Init(chatboxExtended: Types.ChatboxExtended)
     ChatboxExtended = chatboxExtended;
     local Core: Types.ChatboxCore = ChatboxExtended.Core;
     Config = Core.GetConfig();
-    ChatStyling = Core.ChatStyling;
+    TextStyling = Core.TextStyling
     ChatCommands = Core.ChatCommands;
     ChatMonitor._Init(ChatboxExtended);
 end
@@ -177,7 +178,7 @@ function ChatChannel.PostMessage(self: ChatChannel,sender: Player,msg: string)
         return;
     end
     -- Strip message of any rich text
-    msg = ChatStyling.StripRichText(msg);
+    msg = TextStyling.StripRichText(msg);
 
     -- Check if the first char is command prefix
     if msg:sub(1,1) == ChatCommands.Prefix then

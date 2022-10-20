@@ -1,6 +1,11 @@
 export type Map<K,V> = {[K]: V};
 export type Dictionary<T> = Map<string,T>;
 
+local Dependencies: Folder = script.Parent:FindFirstChild("Dependencies");
+---@module Packages/TextStyling
+local TextStylingClass = require(Dependencies:FindFirstChild("TextStyling"));
+export type TextStyling = TextStylingClass.TextStyling;
+
 -- Ctrl + K,Ctrl + 0 - Fold
 -- Ctrl + K,Ctrl + J - Unfold
 
@@ -72,7 +77,8 @@ export type Dictionary<T> = Map<string,T>;
     export type ChatboxCore = {
         ReplicationAction: ReplicationAction,
         ChatCommands: ChatCommands,
-        ChatStyling: ChatStyling,
+        Dependencies: Folder,
+        TextStyling: TextStyling,
         Config: ChatConfig,
 
         GetConfig: () -> ChatConfig,

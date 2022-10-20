@@ -44,14 +44,30 @@ ChatboxCore.ReplicationAction = {
 ]=]
 ChatboxCore.ChatCommands = require(script.Parent:FindFirstChild("ChatCommands"));
 
+local Dependencies: Folder = script.Parent:FindFirstChild("Dependencies") :: Folder;
 --[=[
-    @prop ChatStyling ChatStyling
+    @prop Dependencies Folder
     @within ChatCore
     @tag reference
 
-    This property stores a reference to the [ChatStyling] class.
+    This property stores a reference to the Dependencies folder.
 ]=]
-ChatboxCore.ChatStyling = require(script.Parent:FindFirstChild("ChatStyling"));
+ChatboxCore.Dependencies = Dependencies;
+
+--[=[
+    @prop TextStyling TextStyling
+    @within ChatCore
+    @tag reference
+
+    This property stores a reference to the TextStyling class.
+
+    :::note
+
+    >Read more about [TextStyling](https://dev-syn.github.io/RBX-TextStyling/api/TextStyling)
+
+    :::
+]=]
+ChatboxCore.TextStyling = require(Dependencies:FindFirstChild("TextStyling"));
 
 local ConfigModule: ModuleScript = script.Parent:FindFirstChild("ChatConfig");
 if ConfigModule then

@@ -22,7 +22,8 @@ ChatChannel.__index = ChatChannel;
 ]=]
 ChatChannel.Core = require(script.Parent.Parent:FindFirstChild("ChatCore"));
 
-local ChatStyling: Types.ChatStyling = ChatChannel.Core.ChatStyling;
+---@module Packages/TextStyling
+local TextStyling: Types.TextStyling = ChatChannel.Core.TextStyling
 
 local Config: Types.ChatConfig = ChatChannel.Core.GetConfig();
 
@@ -109,8 +110,8 @@ function ChatChannel.PostMessage(self: ChatChannel,sender: Player,message: strin
     validateMessageLimit(self);
 
     -- Do ChatStyling on the prefix & message
-    local goldenPrefix: string = ChatStyling.ParseTextCodes("&6["..sender.Name.."]: ");
-    local parsedText: string = ChatStyling.ParseTextCodes("&7"..message);
+    local goldenPrefix: string = TextStyling.ParseTextCodes("&6["..sender.Name.."]: ");
+    local parsedText: string = TextStyling.ParseTextCodes("&7"..message);
 
     -- Create message label and parent to ChatList
     local messageLabel: TextLabel = createMessageLabel(goldenPrefix..parsedText);
@@ -131,8 +132,8 @@ function ChatChannel.PostNotification(self: ChatChannel,prefix: string,message: 
     validateMessageLimit(self);
 
     -- Do ChatStyling on the prefix & message
-    prefix = ChatStyling.ParseTextCodes(prefix);
-    message = ChatStyling.ParseTextCodes("&7"..message);
+    prefix = TextStyling.ParseTextCodes(prefix);
+    message = TextStyling.ParseTextCodes("&7"..message);
 
     -- Create message label and parent to ChatList
     local messageLabel: TextLabel = createMessageLabel(prefix..message);
