@@ -8,6 +8,18 @@
         {
             "Name": "PostNotification",
             "ClassName": "RemoteEvent"
+        },
+        {
+            "Name": "ChatChannelReplication",
+            "ClassName": "RemoteEvent"
+        },
+        {
+            "Name": "RequestChannels",
+            "ClassName": "RemoteFunction"
+        },
+        {
+            "Name": "RealmCommandEvents",
+            "ClassName": "Folder"
         }
     ]
 }
