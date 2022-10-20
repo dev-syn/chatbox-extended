@@ -1,12 +1,24 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.3.0]
 ### Added
-    - Add moonwave documentation
-    - ChatCore used by the server & client ChatboxExtended
+    - Moonwave documentation
+    - ChatboxExtendedC which is the client version of ChatboxExtended
+    - ChatCore used by the ChatboxExtended on the server & client
+    - ChatChannelC to represent the client class of ChatChannel
+    - ChatChannelC.Messages used to store the message in the ChatChannel
+    - ChatCore.FindChannel to replace ChatboxExtended.GetChannel
+    - ChatboxExtendedC.YieldTillChannel used to yield till a ChatChannel exists or it timed out
+    - ChatConfig.MAX_MESSAGES_SERVER used to limit the cached messages on the server
 ### Changed
     - Moved server & client individual type modules into one type module
+    - Increased default ChatConfig.MAX_MESSAGES to 45
+    - ChatStyling converted to TextStyling
 ### Removed
+    - ChatboxExtendedC.Messages replaced with ChatChannelC.Messages
+    - ChatboxExtended.GetChannel superseded by ChatCore.FindChannel
 
 ## [0.2.0]
 ### Added
