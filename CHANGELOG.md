@@ -16,6 +16,7 @@
     - Moved server & client individual type modules into one type module
     - Increased default ChatConfig.MAX_MESSAGES to 45
     - ChatStyling converted to TextStyling
+    - RealmCommand Types module require remove extra .Parent
 ### Removed
     - ChatboxExtendedC.Messages replaced with ChatChannelC.Messages
     - ChatboxExtended.GetChannel superseded by ChatCore.FindChannel

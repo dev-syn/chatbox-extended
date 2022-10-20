@@ -1,5 +1,5 @@
 ---@module lib/Types
-local Types = require(script.Parent.Parent.Parent:FindFirstChild("Types"));
+local Types = require(script.Parent.Parent:FindFirstChild("Types"));
 type RealmCommand = Types.RealmCommand;
 
 local isServer: boolean = game:GetService("RunService"):IsServer();
