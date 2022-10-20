@@ -1,7 +1,10 @@
 changelog = true
 [[classOrder]]
+section = "Core API"
+classes = ["ChatConfig","ChatStyling","Command","RealmCommand","ChatCommands","ChatCore"]
+[[classOrder]]
 section = "Server API"
-classes = ["ChatboxExtendedServer","ChatChannel","ChatCommands"]
+classes = ["ChatMonitor","ChatChannel","ChatboxExtended"]
 [[classOrder]]
 section = "Client API"
-classes = ["ChatboxExtendedClient"]
+classes = ["ChatUI","ChatChannelC","ChatboxExtendedC"]
