@@ -12,6 +12,7 @@
     - ChatCore.FindChannel to replace ChatboxExtended.GetChannel
     - ChatboxExtendedC.YieldTillChannel used to yield till a ChatChannel exists or it timed out
     - ChatConfig.MAX_MESSAGES_SERVER used to limit the cached messages on the server
+    - Fix RealmCommand.__index missing from RealmCommand
 ### Changed
     - Moved server & client individual type modules into one type module
     - Increased default ChatConfig.MAX_MESSAGES to 45
