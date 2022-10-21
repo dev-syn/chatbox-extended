@@ -5,9 +5,12 @@ registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 License = "MIT"
 
+exclude = ["moonwave.toml","*.remodel.lua"]
+
 [dependencies]
 TextStyling = "dev-syn/text-styling@0.1.4"
 [server-dependencies]
-Permissions = "dev-syn/permissions@0.2.2"
+Permissions = "dev-syn/permissions@0.4.1"
 [place]
-shared-packages = "game.ReplicatedStorage.Permissions.Dependencies"
+shared-packages = "game.ReplicatedStorage.Dependencies"
+server-packages = "game.ServerScriptService.ServerDependencies"
