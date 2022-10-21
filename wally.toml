@@ -1,7 +1,13 @@
 [package]
 name = "dev-syn/chatbox-extended"
-version = "0.2.0"
+version = "0.3.0"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
+License = "MIT"
 
 [dependencies]
+TextStyling = "dev-syn/text-styling@0.1.4"
+[server-dependencies]
+Permissions = "dev-syn/permissions@0.2.1"
+[place]
+shared-packages = "game.ReplicatedStorage.Permissions.Dependencies"
