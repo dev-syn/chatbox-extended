@@ -8,6 +8,6 @@ License = "MIT"
 [dependencies]
 TextStyling = "dev-syn/text-styling@0.1.4"
 [server-dependencies]
-Permissions = "dev-syn/permissions@0.2.1"
+Permissions = "dev-syn/permissions@0.2.2"
 [place]
 shared-packages = "game.ReplicatedStorage.Permissions.Dependencies"
