@@ -7,15 +7,13 @@
         "ReplicatedStorage": {
             "$className": "ReplicatedStorage",
 
-            "ChatboxExtended": {
-                "$path": "lib",
-
-                "Dependencies": {"$path": "Packages"}
-            }
+            "Dependencies": {"$path": "Packages"},
+            "ChatboxExtended": {"$path": "lib"}
         },
         "ServerScriptService": {
             "$className": "ServerScriptService",
             
+            "ServerDependencies": {"$path": "ServerPackages"},
             "ChatboxRunner": {"$path": "TestScripts/ChatboxRunner.server.lua"}
         },
         "StarterPlayer": {
