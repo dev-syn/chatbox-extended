@@ -1,4 +1,4 @@
----@module lib/Types
+---@module ChatboxExtended/lib/Types
 local Types = require(script.Parent:FindFirstChild("Types"));
 type ChatChannel = Types.ChatChannel;
 type RealmCommand = Types.RealmCommand;
@@ -64,11 +64,18 @@ PostMessage.OnServerEvent:Connect(function(sender: Player,channelName: string,me
     end
 end);
 
+---@module ServerPackages/Permissions
+local Permissions: any = require(Core.ChatboxExtendedModule.Parent:FindFirstChild("Permissions"));
+if not Permissions then
+    warn("[ChatboxExtended]: No 'Permissions' found as a dependency, if this dependency is missing then users will be able to use all commands that exist by default in ChatboxExtended");
+end
+
 local ChatMonitor: Types.Schema_ChatMonitor = require(script:FindFirstChild("ChatMonitor"));
 
 local isInitialized: boolean = false;
 --[=[
     @within ChatboxExtended
+    @param permissions Permissions? -- You can pass 
 
     Initializes the [ChatChannel] and [ChatCommands] class and loads the [default chat commands](/api/ChatCommands#LoadDefaultCommands).
 
@@ -78,7 +85,7 @@ local isInitialized: boolean = false;
 
     :::
 ]=]
-function ChatboxExtended.Init()
+function ChatboxExtended.Init(permissions: any)
     if isInitialized then return; end
     isInitialized = true;
     -- Get the potentially updated config

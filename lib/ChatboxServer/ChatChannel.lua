@@ -6,7 +6,7 @@ local ChatChannelReplication = Remotes:FindFirstChild("ChatChannelReplication") 
 local PostMessage: RemoteEvent = Remotes:FindFirstChild("PostMessage");
 local PostNotification: RemoteEvent = Remotes:FindFirstChild("PostNotification");
 
---- @module lib/Types
+--- @module ChatboxExtended/lib/Types
 local Types = script.Parent.Parent:FindFirstChild("Types");
 export type ChatChannel = Types.ChatChannel;
 

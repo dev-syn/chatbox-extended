@@ -1,4 +1,4 @@
---- @module lib/Types
+--- @module ChatboxExtended/lib/Types
 local Types = require(script.Parent:FindFirstChild("Types"));
 type ChatChannel = Types.ChatChannelC;
 type RealmCommand = Types.RealmCommand;
@@ -246,10 +246,12 @@ function ChatboxExtended.Init()
         end
     end);
 
-    PostMessage.OnClientEvent:Connect(function(channelName: string,sender: Player,message: string)
+    PostMessage.OnClientEvent:Connect(function(channelName: string,sender: Player,msg: string)
         local channel: ChatChannel = Core.FindChatChannel(ChatboxExtended,channelName);
         if channel then
-            channel:PostMessage(sender,message);
+            -- TODO: Get custom prefix
+            local prefix: string = string.format("&f&l[&r%s&f&l]&r: ",sender.Name);
+            channel:PostMessage(prefix,"&7"..msg);
         end
     end);
 
@@ -305,9 +307,8 @@ function ChatboxExtended.Init()
     end);
     msgCmd:SetClientHandler(function(senderName: string,msg: string)
         if ChatboxExtended.ActiveChannel then
-            senderName = TextStyling.ParseTextCodes(senderName);
-            msg = TextStyling.ParseTextCodes(msg);
-            (ChatboxExtended.ActiveChannel::ChatChannel):PostMessage();
+            local prefix: string = "&b[msg] -> &f&l[%s&f&l]&b: &7"
+            (ChatboxExtended.ActiveChannel::ChatChannel):PostMessage(prefix:format(senderName),msg);
         end
     end);
     ChatCommands.RegisterCommand(msgCmd);

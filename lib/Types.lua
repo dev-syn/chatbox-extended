@@ -1,10 +1,8 @@
 export type Map<K,V> = {[K]: V};
 export type Dictionary<T> = Map<string,T>;
 
-local Dependencies: Folder = script.Parent:FindFirstChild("Dependencies");
----@module Packages/TextStyling
-local TextStylingClass = require(Dependencies:FindFirstChild("TextStyling"));
-export type TextStyling = TextStylingClass.TextStyling;
+local TextStylingClass = require(script.Parent.Parent:FindFirstChild("TextStyling"));
+export type TextStyling = any;
 
 -- Ctrl + K,Ctrl + 0 - Fold
 -- Ctrl + K,Ctrl + J - Unfold
@@ -76,8 +74,8 @@ export type TextStyling = TextStylingClass.TextStyling;
 
     export type ChatboxCore = {
         ReplicationAction: ReplicationAction,
+        ChatboxExtendedModule: ModuleScript,
         ChatCommands: ChatCommands,
-        Dependencies: Folder,
         TextStyling: TextStyling,
         Config: ChatConfig,
 
@@ -151,7 +149,8 @@ export type TextStyling = TextStylingClass.TextStyling;
         Core: ChatboxCore,
         ChatChannel: Schema_ChatChannel,
         _ChatChannels: {ChatChannel},
-        Init: () -> (),
+
+        Init: (permissions: any) -> (),
         CreateChannel: (channelName: string,bAuthorized: boolean?) -> ChatChannel,
         PostNotification: (channelName: string,plr: Player,prefix: string,msg: string) -> (),
         PostError: (channelName: string?,plr: Player,msg: string) -> (),
@@ -170,8 +169,8 @@ export type TextStyling = TextStylingClass.TextStyling;
 
         new: (channelName: string) -> ChatChannelC,
         Init: (chatboxExtended: ChatboxExtendedC) -> (),
-        PostMessage: (self: ChatChannelC,sender: Player,message: string) -> (),
-        PostNotification: (self: ChatChannelC,prefix: string,message: string) -> ()
+        PostMessage: (self: ChatChannelC,prefix: string,msg: string) -> (),
+        PostNotification: (self: ChatChannelC,prefix: string,msg: string) -> ()
     };
 
     export type Object_ChatChannelC = {

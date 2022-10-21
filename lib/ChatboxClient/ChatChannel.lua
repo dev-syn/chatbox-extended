@@ -1,4 +1,4 @@
----@module lib/Types
+--- @module ChatboxExtended/lib/Types
 local Types = require(script.Parent.Parent:FindFirstChild("Types"));
 
 type ChatboxExtended = Types.ChatboxExtendedC;
@@ -100,21 +100,20 @@ end
 --[=[
     @method PostMessage
     @within ChatChannelC
-    @param sender Player -- The player who posted this message
-    @param message string -- The message that was sent
+    @param prefix string -- The prefix that will be inserted before the message
+    @param msg string -- The message that will be displayed
 
     This method posts the sent message to the [ChatChannel](/api/ChatChannelC).
 ]=]
-function ChatChannel.PostMessage(self: ChatChannel,sender: Player,message: string)
+function ChatChannel.PostMessage(self: ChatChannel,prefix: string,msg: string)
     -- Destroy first message when exceeding chat limit
     validateMessageLimit(self);
 
-    -- Do ChatStyling on the prefix & message
-    local goldenPrefix: string = TextStyling.ParseTextCodes("&6["..sender.Name.."]: ");
-    local parsedText: string = TextStyling.ParseTextCodes("&7"..message);
-
+    -- Do TextStyling on the prefix & message
+    prefix = TextStyling.ParseTextCodes(prefix);
+    msg = TextStyling.ParseTextCodes(msg);
     -- Create message label and parent to ChatList
-    local messageLabel: TextLabel = createMessageLabel(goldenPrefix..parsedText);
+    local messageLabel: TextLabel = createMessageLabel(prefix..msg);
     messageLabel.Parent = ChatboxExtended.ChatUI.ChatList;
     table.insert(self.Messages,messageLabel);
 end
@@ -123,20 +122,19 @@ end
     @method PostNotification
     @within ChatChannelC
     @param prefix string -- The prefix for this notification
-    @param message string -- The message to be posted with the notification
+    @param msg string -- The message to be posted with the notification
 
     This method posts the specified notification and message to the [ChatChannel](/api/ChatChannelC).
 ]=]
-function ChatChannel.PostNotification(self: ChatChannel,prefix: string,message: string)
+function ChatChannel.PostNotification(self: ChatChannel,prefix: string,msg: string)
     -- Destroy first message when exceeding chat limit
     validateMessageLimit(self);
 
     -- Do ChatStyling on the prefix & message
     prefix = TextStyling.ParseTextCodes(prefix);
-    message = TextStyling.ParseTextCodes("&7"..message);
-
+    msg = TextStyling.ParseTextCodes("&7"..msg);
     -- Create message label and parent to ChatList
-    local messageLabel: TextLabel = createMessageLabel(prefix..message);
+    local messageLabel: TextLabel = createMessageLabel(prefix..msg);
     messageLabel.Parent = ChatboxExtended.ChatUI.ChatList;
     table.insert(self.Messages,messageLabel);
 end

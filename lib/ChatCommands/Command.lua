@@ -1,4 +1,4 @@
---- @module lib/Types
+--- @module ChatboxExtended/lib/Types
 local Types = require(script.Parent.Parent:FindFirstChild("Types"));
 type Command = Types.Command;
 

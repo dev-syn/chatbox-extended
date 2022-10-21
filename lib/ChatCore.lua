@@ -1,7 +1,9 @@
 type Dictionary<T> = {[string]: T};
 
----@module lib/Types
-local Types = require(script.Parent:FindFirstChild("Types"));
+local ChatboxExtendedModule: ModuleScript = script.Parent;
+
+--- @module ChatboxExtended/lib/Types
+local Types = require(ChatboxExtendedModule:FindFirstChild("Types"));
 
 type ChatboxExtended = Types.ChatboxExtended;
 type ChatChannel = Types.ChatChannel;
@@ -36,23 +38,22 @@ ChatboxCore.ReplicationAction = {
 };
 
 --[=[
+    @prop ChatboxExtendedModule ModuleScript
+    @within ChatCore
+    @tag reference
+
+    This property stores the ChatboxExtended ModuleScript used for references.
+]=]
+ChatboxCore.ChatboxExtendedModule = ChatboxExtendedModule;
+
+--[=[
     @prop ChatCommands ChatCommands
     @within ChatCore
     @tag reference
 
     This property stores a reference to the [ChatCommands] class.
 ]=]
-ChatboxCore.ChatCommands = require(script.Parent:FindFirstChild("ChatCommands"));
-
-local Dependencies: Folder = script.Parent:FindFirstChild("Dependencies") :: Folder;
---[=[
-    @prop Dependencies Folder
-    @within ChatCore
-    @tag reference
-
-    This property stores a reference to the Dependencies folder.
-]=]
-ChatboxCore.Dependencies = Dependencies;
+ChatboxCore.ChatCommands = require(ChatboxExtendedModule:FindFirstChild("ChatCommands"));
 
 --[=[
     @prop TextStyling TextStyling
@@ -67,9 +68,9 @@ ChatboxCore.Dependencies = Dependencies;
 
     :::
 ]=]
-ChatboxCore.TextStyling = require(Dependencies:FindFirstChild("TextStyling"));
+ChatboxCore.TextStyling = require(ChatboxExtendedModule.Parent:FindFirstChild("TextStyling"));
 
-local ConfigModule: ModuleScript = script.Parent:FindFirstChild("ChatConfig");
+local ConfigModule: ModuleScript = ChatboxExtendedModule:FindFirstChild("ChatConfig");
 if ConfigModule then
     ChatboxCore.Config = require(ConfigModule);
 end
